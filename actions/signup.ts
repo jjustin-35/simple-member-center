@@ -1,25 +1,28 @@
 "use server";
 
-import { validateEmail, validatePassword } from "@/helpers/validate";
+import { ApiState } from "@/types/api";
+import {
+  validateEmail,
+  validatePassword,
+  validatePhone,
+} from "@/helpers/validate";
 import { createClient } from "@/utils/supabase/server";
 
-export interface LoginFormState {
-  success: boolean;
-  message: string;
-  errors: {
-    email?: string;
-    password?: string;
-  };
-}
+type SignupFormState = ApiState<{
+  email?: string;
+  password?: string;
+  phone?: string;
+}>;
 
-export async function loginAction(
-  _: LoginFormState,
+export async function signupAction(
+  _: SignupFormState,
   formData: FormData
-): Promise<LoginFormState> {
+): Promise<SignupFormState> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const phone = formData.get("phone") as string;
 
-  const errors: LoginFormState["errors"] = {};
+  const errors: SignupFormState["errors"] = {};
 
   // Validate email
   if (!email) {
@@ -35,6 +38,12 @@ export async function loginAction(
     errors.password = "密碼至少需要6個字元";
   }
 
+  if (!phone) {
+    errors.phone = "請輸入電話號碼";
+  } else if (!validatePhone(phone)) {
+    errors.phone = "請輸入正確格式的電話號碼";
+  }
+
   // If there are validation errors, return them
   if (Object.keys(errors).length > 0) {
     return {
@@ -46,23 +55,24 @@ export async function loginAction(
 
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      phone,
     });
     if (error) throw error;
     if (!data) throw new Error("no user data");
 
     return {
       success: true,
-      message: "登入成功！",
+      message: "註冊成功！",
       errors: {},
     };
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Signup error:", error);
     return {
       success: false,
-      message: "登入失敗，請稍後再試",
+      message: "註冊失敗，請稍後再試",
       errors: {},
     };
   }

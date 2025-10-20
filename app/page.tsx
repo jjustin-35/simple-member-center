@@ -1,5 +1,5 @@
-import LoginForm from '@/components/LoginForm';
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return <LoginForm />;
+export default async function Home() {
+  redirect("/login");
 }

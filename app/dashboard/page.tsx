@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import OtpForm from "@/components/OtpForm";
+import SignoutButton from "@/components/SignoutButton";
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -11,15 +12,16 @@ export default async function Dashboard() {
   } = await supabase.auth.getUser();
 
   if (!user || error) {
-    redirect("/login");
+    redirect("/auth/login");
   }
 
   return (
     <div className="min-h-screen py-6 bg-gray-50">
       <div className="bg-gray-50 text-black text-2xl font-bold flex flex-col items-center justify-center">
         <h1 className="text-4xl font-bold">Dashboard</h1>
-        <p className="text-2xl">welcome, {user?.email}</p>
+        <p className="text-2xl mb-4">welcome, {user?.email}</p>
         <OtpForm />
+        <SignoutButton />
       </div>
     </div>
   );

@@ -21,20 +21,23 @@ export const getOTPData = async (): Promise<ApiState> => {
 };
 
 export const registerOTP = async () => {
-  const { base32: tempSecret, otpauth_url: otpauthURL } =
-    speakeasy.generateSecret({
-      name: "OTP",
-      issuer: "OTP-Sample",
-    });
-
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase.auth.updateUser({
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (!user || error) throw new Error("no user");
+
+    const { base32: tempSecret, otpauth_url: otpauthURL } =
+    speakeasy.generateSecret({
+      name: "OTP-Sample: " + user.email,
+      issuer: "OTP-Sample",
+    });
+    
+    const { data, error: updateError } = await supabase.auth.updateUser({
       data: {
         temp_otp_secret: tempSecret,
       },
     });
-    if (error) throw error;
+    if (updateError) throw updateError;
     if (!data) throw new Error("no user data");
 
     return {

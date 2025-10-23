@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { getOTPData, registerOTP } from "@/actions/otp";
+import { clearOTP, getOTPData, registerOTP } from "@/actions/otp";
 import OtpVerify from "./OtpVerify";
 
 const OtpForm = () => {
@@ -13,20 +13,30 @@ const OtpForm = () => {
     (async () => {
       const { data } = await getOTPData();
       if (!data) return;
-      setIsOpenOTP(data.is_otp_enabled);
+      setIsOpenOTP(!!data.is_otp_enabled);
       setOtpUrl(data.otpauthURL);
     })();
   }, []);
 
-  const onOpenOTP = () => {
-    setIsOpenOTP(!isOpenOTP);
-    dialogRef.current?.showModal();
-    (async () => {
+  const onToggleOTP = async () => {
+    const newIsOpenOTP = !isOpenOTP;
+    setIsOpenOTP(newIsOpenOTP);
+    if (newIsOpenOTP) {
+      dialogRef.current?.showModal();
       const otpData = await registerOTP();
       if (otpData) {
         setOtpUrl(otpData.data.otpauthURL);
       }
-    })();
+      return;
+    }
+    await clearOTP();
+    setOtpUrl(null);
+  };
+
+  const onCancel = () => {
+    dialogRef.current?.close();
+    setOtpUrl(null);
+    setIsOpenOTP(false);
   };
 
   return (
@@ -37,14 +47,14 @@ const OtpForm = () => {
           name="open-otp"
           type="checkbox"
           checked={isOpenOTP}
-          onChange={onOpenOTP}
+          onChange={onToggleOTP}
           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
         />
         <label htmlFor="open-otp" className="ml-2 block text-sm text-gray-900">
           開啟 OTP 驗證
         </label>
       </div>
-      <OtpVerify dialogRef={dialogRef} otpUrl={otpUrl} />
+      <OtpVerify dialogRef={dialogRef} otpUrl={otpUrl} onCancel={onCancel} />
     </div>
   );
 };

@@ -5,5 +5,5 @@ export interface ApiState<
   success: boolean;
   message: string;
   data?: ResponseData | null;
-  errors: Partial<Record<keyof RequestData, any>>;
+  errors?: Partial<Record<keyof RequestData, any>>;
 }

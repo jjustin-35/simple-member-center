@@ -8,7 +8,6 @@ import { ApiState } from "@/types/api";
 type SignupFormState = ApiState<{
   email?: string;
   password?: string;
-  phone?: string;
 }>;
 
 const initialState: SignupFormState = {
@@ -77,31 +76,6 @@ export default function SignupForm() {
 
             <div>
               <label
-                htmlFor="phone"
-                className="block text-sm font-medium text-gray-700"
-              >
-                電話號碼
-              </label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                autoComplete="tel"
-                required
-                className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
-                  state.errors.phone ? "border-red-300" : "border-gray-300"
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
-                placeholder="請輸入電話號碼 (例: 0912345678)"
-              />
-              {state.errors.phone && (
-                <p className="mt-1 text-sm text-red-600">
-                  {state.errors.phone}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700"
               >
@@ -146,21 +120,6 @@ export default function SignupForm() {
               <a href="#" className="text-indigo-600 hover:text-indigo-500">
                 隱私政策
               </a>
-            </label>
-          </div>
-          <div className="flex items-center">
-            <input
-              id="open-otp"
-              name="open-otp"
-              type="checkbox"
-              value="true"
-              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-            />
-            <label
-              htmlFor="open-otp"
-              className="ml-2 block text-sm text-gray-900"
-            >
-              開啟 OTP 驗證
             </label>
           </div>
 

@@ -1,58 +1,130 @@
 "use server";
 
-import { randomBytes } from "crypto";
-import { ApiState } from "@/types/api";
+import speakeasy from "speakeasy";
 import { createClient } from "@/utils/supabase/server";
+import { ApiState } from "@/types/api";
 
-const getOTP = (): { otp: string; expiresAt: Date } => {
-  const otp = randomBytes(6).toString("hex");
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 5);
-  return { otp, expiresAt };
-};
-
-export const generateOTP = async (): Promise<ApiState> => {
+export const getOTPData = async (): Promise<ApiState> => {
   try {
     const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
-    if (!user || error) throw new Error("no user data");
-    const { phone, user_metadata } = user;
-    if (!phone || !user_metadata?.open_otp)
-      throw new Error("no phone or open_otp");
+    const { data } = await supabase.auth.getUser();
+    const { is_otp_enabled, temp_otp_secret, otp_secret } =
+      data?.user?.user_metadata || {};
+    return {
+      success: true,
+      message: "OTP data retrieved successfully",
+      data: { is_otp_enabled, temp_otp_secret, otp_secret },
+    };
+  } catch (error) {
+    console.error("Get OTP data error:", error);
+  }
+};
 
-    if (
-      user_metadata?.otp &&
-      user_metadata?.otp_expires_at &&
-      user_metadata?.otp_expires_at > Date.now()
-    ) {
-      throw new Error("OTP already generated");
-    }
+export const registerOTP = async () => {
+  const { base32: tempSecret, otpauth_url: otpauthURL } =
+    speakeasy.generateSecret({
+      name: "OTP",
+      issuer: "OTP-Sample",
+    });
 
-    const { otp, expiresAt } = getOTP();
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({
-        otp,
-        otp_expires_at: expiresAt,
-      })
-      .eq("id", user.id);
-    if (updateError) throw updateError;
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.updateUser({
+      data: {
+        temp_otp_secret: tempSecret,
+      },
+    });
+    if (error) throw error;
+    if (!data) throw new Error("no user data");
 
     return {
       success: true,
-      message: "OTP generated successfully",
-      data: { otp, phone },
+      message: "OTP registered successfully",
+      data: {
+        temp_secret: tempSecret,
+        otpauthURL: otpauthURL,
+      },
+    };
+  } catch (error) {
+    console.error("Generate OTP error:", error);
+    return null;
+  }
+};
+
+export const verifyOTP = async (
+  _: ApiState,
+  formData: FormData
+): Promise<ApiState> => {
+  const token = formData.get("token") as string;
+  if (!token) {
+    return {
+      success: false,
+      message: "OTP is required",
+      errors: { token: "OTP is required" },
+    };
+  }
+  if (token.length !== 6) {
+    return {
+      success: false,
+      message: "OTP is incorrect",
+      errors: { token: "OTP is incorrect" },
+    };
+  }
+
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+
+    const { temp_otp_secret, otp_secret } = data?.user?.user_metadata || {};
+    if (!temp_otp_secret && !otp_secret) throw new Error("no otp registered");
+    const isInitialOTP = !otp_secret;
+    const secret = isInitialOTP ? temp_otp_secret : otp_secret;
+    const isVerified = speakeasy.totp.verify({
+      secret,
+      token,
+      encoding: "base32",
+    });
+    if (!isVerified) throw new Error("invalid otp");
+
+    if (isInitialOTP) {
+      await supabase.auth.updateUser({
+        data: {
+          otp_secret: secret,
+          is_otp_enabled: true,
+        },
+      });
+    }
+
+    return {
+      success: true,
+      message: "OTP verified successfully",
       errors: {},
     };
   } catch (error) {
-    console.log(error);
+    console.error("Verify OTP error:", error);
     return {
       success: false,
-      message: "fail to generate OTP",
+      message: "OTP verification failed",
       errors: {},
     };
+  }
+};
+
+export const clearOTP = async (): Promise<ApiState> => {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.updateUser({
+      data: {
+        is_otp_enabled: false,
+        temp_otp_secret: null,
+        otp_secret: null,
+      },
+    });
+    if (error) throw error;
+    if (!data) throw new Error("no user data");
+    return { success: true, message: "OTP cleared successfully" };
+  } catch (error) {
+    console.error("Clear OTP error:", error);
+    return { success: false, message: "OTP clearing failed" };
   }
 };

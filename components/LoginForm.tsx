@@ -21,12 +21,7 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (!state.success || !state.data) return;
-    const { user } = state.data;
-    if (user?.user_metadata?.open_otp) {
-      router.push("/otp");
-    } else {
-      router.push("/dashboard");
-    }
+    router.push("/dashboard");
   }, [state.success, state.data]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {

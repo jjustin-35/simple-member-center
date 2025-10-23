@@ -4,7 +4,6 @@ import { ApiState } from "@/types/api";
 import {
   validateEmail,
   validatePassword,
-  validatePhone,
 } from "@/helpers/validate";
 import { createClient } from "@/utils/supabase/server";
 
@@ -20,8 +19,6 @@ export async function signupAction(
 ): Promise<SignupFormState> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const phone = formData.get("phone") as string;
-  const openOTP = formData.get("open-otp") as string;
 
   const errors: SignupFormState["errors"] = {};
 
@@ -39,12 +36,6 @@ export async function signupAction(
     errors.password = "密碼至少需要6個字元";
   }
 
-  if (!phone) {
-    errors.phone = "請輸入電話號碼";
-  } else if (!validatePhone(phone)) {
-    errors.phone = "請輸入正確格式的電話號碼";
-  }
-
   // If there are validation errors, return them
   if (Object.keys(errors).length > 0) {
     return {
@@ -59,12 +50,6 @@ export async function signupAction(
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      phone,
-      options: {
-        data: {
-          open_otp: openOTP === "true",
-        },
-      },
     });
     if (error) throw error;
     if (!data) throw new Error("no user data");

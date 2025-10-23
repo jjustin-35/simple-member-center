@@ -1,9 +1,16 @@
 "use client";
 
-import { useActionState, startTransition, useEffect } from "react";
+import {
+  useActionState,
+  startTransition,
+  useEffect,
+  useRef,
+} from "react";
 import { useRouter } from "next/navigation";
-import { loginAction, LoginFormState } from "@/actions/login";
 import Link from "next/link";
+import { loginAction, LoginFormState } from "@/actions/login";
+import { signout } from "@/actions/signout";
+import OtpVerify from "./OtpVerify";
 
 const initialState: LoginFormState = {
   success: false,
@@ -18,11 +25,21 @@ export default function LoginForm() {
     initialState
   );
   const router = useRouter();
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     if (!state.success || !state.data) return;
-    router.push("/dashboard");
+    if (state.data?.user_metadata?.is_otp_enabled) {
+      dialogRef.current?.showModal();
+    } else {
+      router.push("/dashboard");
+    }
   }, [state.success, state.data]);
+
+  const onOtpCancel = async () => {
+    dialogRef.current?.close();
+    await signout();
+  };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -181,6 +198,7 @@ export default function LoginForm() {
           </div>
         </form>
       </div>
+      <OtpVerify dialogRef={dialogRef} onCancel={onOtpCancel} />
     </div>
   );
 }

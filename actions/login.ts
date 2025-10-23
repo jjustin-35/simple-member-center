@@ -1,14 +1,11 @@
 "use server";
 
-import { User, Session } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
 import { validateEmail, validatePassword } from "@/helpers/validate";
 import { createClient } from "@/utils/supabase/server";
 
 export interface LoginFormState {
-  data?: {
-    user: User;
-    session: Session;
-  } | null;
+  data?: User | null;
   success: boolean;
   message: string;
   errors: {
@@ -61,10 +58,7 @@ export async function loginAction(
     return {
       success: true,
       message: "登入成功！",
-      data: {
-        user: data.user,
-        session: data.session,
-      },
+      data: data.user,
       errors: {},
     };
   } catch (error) {

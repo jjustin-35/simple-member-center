@@ -112,7 +112,7 @@ const OtpVerify = ({
   onCancel,
 }: {
   dialogRef: React.RefObject<HTMLDialogElement>;
-  otpUrl: string;
+  otpUrl?: string;
   onCancel: () => void;
 }) => {
   const [isVerifying, setIsVerifying] = useState(false);
@@ -132,7 +132,7 @@ const OtpVerify = ({
   };
 
   const content = (() => {
-    if (isVerifying) {
+    if (!otpUrl || isVerifying) {
       return <VerifyForm onFinish={handleFinish} />;
     }
 

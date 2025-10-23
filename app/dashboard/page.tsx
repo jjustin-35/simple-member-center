@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import OtpForm from "@/components/OtpForm";
+import OtpForm from "@/components/OtpSetting";
 import SignoutButton from "@/components/SignoutButton";
 
 export default async function Dashboard() {

@@ -1,5 +1,9 @@
-export interface ApiState<D extends Record<string, any> = any> {
+export interface ApiState<
+  RequestData extends Record<string, any> = any,
+  ResponseData extends Record<string, any> = any
+> {
   success: boolean;
   message: string;
-  errors: Partial<Record<keyof D, any>>;
+  data?: ResponseData | null;
+  errors: Partial<Record<keyof RequestData, any>>;
 }

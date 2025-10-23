@@ -21,6 +21,7 @@ export async function signupAction(
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const phone = formData.get("phone") as string;
+  const openOTP = formData.get("open-otp") as string;
 
   const errors: SignupFormState["errors"] = {};
 
@@ -59,6 +60,11 @@ export async function signupAction(
       email,
       password,
       phone,
+      options: {
+        data: {
+          open_otp: openOTP === "true",
+        },
+      },
     });
     if (error) throw error;
     if (!data) throw new Error("no user data");

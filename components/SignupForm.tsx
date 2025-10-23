@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, startTransition } from "react";
+import { useActionState, startTransition, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { signupAction } from "@/actions/signup";
 import { ApiState } from "@/types/api";
 
@@ -21,6 +22,13 @@ export default function SignupForm() {
     signupAction,
     initialState
   );
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state.success) {
+      router.push("/login");
+    }
+  }, [state.success]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -130,14 +138,29 @@ export default function SignupForm() {
               htmlFor="agree-terms"
               className="ml-2 block text-sm text-gray-900"
             >
-              我同意{" "}
+              我同意
               <a href="#" className="text-indigo-600 hover:text-indigo-500">
                 服務條款
-              </a>{" "}
-              和{" "}
+              </a>
+              和
               <a href="#" className="text-indigo-600 hover:text-indigo-500">
                 隱私政策
               </a>
+            </label>
+          </div>
+          <div className="flex items-center">
+            <input
+              id="open-otp"
+              name="open-otp"
+              type="checkbox"
+              value="true"
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label
+              htmlFor="open-otp"
+              className="ml-2 block text-sm text-gray-900"
+            >
+              開啟 OTP 驗證
             </label>
           </div>
 
@@ -190,7 +213,7 @@ export default function SignupForm() {
 
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              已經有帳戶？{" "}
+              已經有帳戶？
               <a
                 href="/login"
                 className="font-medium text-indigo-600 hover:text-indigo-500"

@@ -1,11 +1,14 @@
 "use client";
 
-import { useActionState, startTransition } from "react";
+import { useActionState, startTransition, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { loginAction, LoginFormState } from "@/actions/login";
+import Link from "next/link";
 
 const initialState: LoginFormState = {
   success: false,
   message: "",
+  data: null,
   errors: {},
 };
 
@@ -14,6 +17,17 @@ export default function LoginForm() {
     loginAction,
     initialState
   );
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!state.success || !state.data) return;
+    const { user } = state.data;
+    if (user?.user_metadata?.open_otp) {
+      router.push("/otp");
+    } else {
+      router.push("/dashboard");
+    }
+  }, [state.success, state.data]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -161,13 +175,13 @@ export default function LoginForm() {
 
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              還沒有帳戶？{" "}
-              <a
-                href="#"
+              還沒有帳戶？
+              <Link
+                href="/signup"
                 className="font-medium text-indigo-600 hover:text-indigo-500"
               >
                 立即註冊
-              </a>
+              </Link>
             </p>
           </div>
         </form>

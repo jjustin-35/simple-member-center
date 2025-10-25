@@ -110,10 +110,14 @@ const OtpVerify = ({
   dialogRef,
   otpUrl,
   onCancel,
+  onFinish,
+  isModal = true,
 }: {
-  dialogRef: React.RefObject<HTMLDialogElement>;
+  dialogRef?: React.RefObject<HTMLDialogElement>;
   otpUrl?: string;
-  onCancel: () => void;
+  onCancel?: () => void;
+  onFinish?: () => void;
+  isModal?: boolean;
 }) => {
   const [isVerifying, setIsVerifying] = useState(false);
 
@@ -123,12 +127,14 @@ const OtpVerify = ({
 
   const handleCancel = () => {
     setIsVerifying(false);
-    onCancel();
+    if (onCancel) onCancel();
+    if (dialogRef) dialogRef.current?.close();
   };
 
   const handleFinish = () => {
     setIsVerifying(false);
-    dialogRef.current?.close();
+    if (onFinish) onFinish();
+    if (dialogRef) dialogRef.current?.close();
   };
 
   const content = (() => {
@@ -157,18 +163,25 @@ const OtpVerify = ({
     );
   })();
 
+  if (isModal)
+    return (
+      <dialog
+        ref={dialogRef}
+        className="backdrop:bg-black backdrop:opacity-50 backdrop:backdrop-blur-sm fixed inset-0 m-auto max-w-md max-h-fit rounded-lg shadow-lg border-0 p-0 bg-transparent"
+      >
+        <button onClick={handleCancel} className="absolute top-4 left-5">
+          x
+        </button>
+        <div className="bg-white p-4 flex flex-col items-center justify-center rounded-lg">
+          {content}
+        </div>
+      </dialog>
+    );
+
   return (
-    <dialog
-      ref={dialogRef}
-      className="backdrop:bg-black backdrop:opacity-50 backdrop:backdrop-blur-sm fixed inset-0 m-auto max-w-md max-h-fit rounded-lg shadow-lg border-0 p-0 bg-transparent"
-    >
-      <button onClick={handleCancel} className="absolute top-4 left-5">
-        x
-      </button>
-      <div className="bg-white p-4 flex flex-col items-center justify-center rounded-lg">
-        {content}
-      </div>
-    </dialog>
+    <div className="flex items-center justify-center">
+      {content}
+    </div>
   );
 };
 

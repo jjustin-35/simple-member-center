@@ -4,6 +4,7 @@ import { useActionState, startTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signupAction } from "@/actions/signup";
 import { ApiState } from "@/types/api";
+import paths from "@/constants/paths";
 
 type SignupFormState = ApiState<{
   email?: string;
@@ -25,7 +26,7 @@ export default function SignupForm() {
 
   useEffect(() => {
     if (state.success) {
-      router.push("/login");
+      router.push(paths.login);
     }
   }, [state.success]);
 
@@ -174,7 +175,7 @@ export default function SignupForm() {
             <p className="text-sm text-gray-600">
               已經有帳戶？
               <a
-                href="/login"
+                href={paths.login}
                 className="font-medium text-indigo-600 hover:text-indigo-500"
               >
                 立即登入

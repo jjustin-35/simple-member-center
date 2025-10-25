@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
+import paths from "@/constants/paths";
 
 export default async function Home() {
-  redirect("/auth/login");
+  redirect(paths.login);
 }

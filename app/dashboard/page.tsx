@@ -3,6 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import OtpForm from "@/components/OtpSetting";
 import SignoutButton from "@/components/SignoutButton";
+import paths from "@/constants/paths";
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -12,7 +13,7 @@ export default async function Dashboard() {
   } = await supabase.auth.getUser();
 
   if (!user || error) {
-    redirect("/auth/login");
+    redirect(paths.login);
   }
 
   return (
@@ -20,7 +21,7 @@ export default async function Dashboard() {
       <div className="bg-gray-50 text-black text-2xl font-bold flex flex-col items-center justify-center">
         <h1 className="text-4xl font-bold">Dashboard</h1>
         <p className="text-2xl mb-4">welcome, {user?.email}</p>
-        <OtpForm />
+        <OtpForm user={user} />
         <SignoutButton />
       </div>
     </div>

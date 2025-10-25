@@ -176,7 +176,7 @@ export default function LoginForm() {
             <p className="text-sm text-gray-600">
               還沒有帳戶？
               <Link
-                href="/signup"
+                href={paths.signup}
                 className="font-medium text-indigo-600 hover:text-indigo-500"
               >
                 立即註冊

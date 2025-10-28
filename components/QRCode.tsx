@@ -14,8 +14,8 @@ const QRCode = ({ data }: { data: string }) => {
 
   if (!data) return null;
   return (
-    <div className="flex flex-col items-center justify-center">
-      <canvas ref={canvasRef} />
+    <div className="flex flex-col items-center justify-center w-50">
+      <canvas ref={canvasRef} style={{ width: "200px", height: "200px" }} />
     </div>
   );
 };

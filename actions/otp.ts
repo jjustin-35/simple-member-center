@@ -34,7 +34,9 @@ export const verifyOTP = async (
 
     if (isInitialOTP) {
       const redisClient = await getRedisClient();
-      const secret = (await redisClient.get(`temp_otp_secret:${userId}`)) as string;
+      const secret = (await redisClient.get(
+        `temp_otp_secret:${userId}`
+      )) as string;
       if (!secret) throw new Error("temp otp expired");
 
       const isVerified = speakeasy.totp.verify({
@@ -58,7 +60,7 @@ export const verifyOTP = async (
         message: "OTP verified successfully",
         errors: {},
       };
-    } 
+    }
 
     const secret = data?.user?.user_metadata?.otp_secret;
     if (!secret) throw new Error("no otp registered");
@@ -80,7 +82,9 @@ export const verifyOTP = async (
     return {
       success: false,
       message: "OTP verification failed",
-      errors: {},
+      errors: {
+        otp: "OTP verification failed",
+      },
     };
   }
 };
@@ -131,7 +135,10 @@ export const registerOTP = async () => {
     return {
       success: true,
       message: "OTP registered successfully",
-      data: otpauthURL,
+      data: {
+        secret: tempSecret,
+        otpauthURL,
+      },
     };
   } catch (error) {
     console.error("Generate OTP error:", error);

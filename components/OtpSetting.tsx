@@ -9,6 +9,7 @@ const OtpForm = ({ user }: { user: User }) => {
   const { is_otp_enabled } = user.user_metadata;
   const [isOpenOTP, setIsOpenOTP] = useState(is_otp_enabled);
   const [otpUrl, setOtpUrl] = useState<string | null>(null);
+  const [otpSecret, setOtpSecret] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -23,16 +24,19 @@ const OtpForm = ({ user }: { user: User }) => {
     if (newIsOpenOTP) {
       const otpData = await registerOTP();
       if (otpData) {
-        setOtpUrl(otpData.data);
+        setOtpUrl(otpData.data.otpauthURL);
+        setOtpSecret(otpData.data.secret);
       }
       return;
     }
     await clearOTP();
     setOtpUrl(null);
+    setOtpSecret(null);
   };
 
   const onCancel = () => {
     setOtpUrl(null);
+    setOtpSecret(null);
     setIsOpenOTP(false);
   };
 
@@ -51,7 +55,7 @@ const OtpForm = ({ user }: { user: User }) => {
           開啟 OTP 驗證
         </label>
       </div>
-      <OtpVerify dialogRef={dialogRef} otpUrl={otpUrl} onCancel={onCancel} />
+      <OtpVerify dialogRef={dialogRef} otpUrl={otpUrl} otpSecret={otpSecret} onCancel={onCancel} />
     </div>
   );
 };

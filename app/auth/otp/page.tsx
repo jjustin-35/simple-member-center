@@ -1,12 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import OtpVerify from "@/components/OtpVerify";
 import paths from "@/constants/paths";
 import { createClient } from "@/utils/supabase/client";
+import { registerOTP } from "@/actions/otp";
 
 const OtpVerifyPage = () => {
+  const [otpUrl, setOtpUrl] = useState<string | null>(null);
+  const [otpSecret, setOtpSecret] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -54,9 +57,23 @@ const OtpVerifyPage = () => {
   const onFinish = () => {
     router.push(paths.dashboard);
   };
+
+  const onResetOTP = async () => {
+    const result = await registerOTP();
+    if (result.success) {
+      setOtpUrl(result.data.otpauthURL);
+      setOtpSecret(result.data.secret);
+    }
+  };
   return (
     <div className="bg-white min-h-screen flex items-center justify-center">
-      <OtpVerify isModal={false} onFinish={onFinish} />
+      <OtpVerify
+        isModal={false}
+        onFinish={onFinish}
+        onResetOTP={onResetOTP}
+        otpUrl={otpUrl}
+        otpSecret={otpSecret}
+      />
     </div>
   );
 };

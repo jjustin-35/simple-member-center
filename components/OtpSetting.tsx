@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
-import { clearOTP, getOTPData, registerOTP } from "@/actions/otp";
+import { clearOTP, registerOTP } from "@/actions/otp";
 import OtpVerify from "./OtpVerify";
 
 const OtpForm = ({ user }: { user: User }) => {
@@ -11,14 +11,19 @@ const OtpForm = ({ user }: { user: User }) => {
   const [otpUrl, setOtpUrl] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
+  useEffect(() => {
+    if (isOpenOTP && otpUrl) {
+      dialogRef.current?.showModal();
+    }
+  }, [isOpenOTP, otpUrl]);
+
   const onToggleOTP = async () => {
     const newIsOpenOTP = !isOpenOTP;
     setIsOpenOTP(newIsOpenOTP);
     if (newIsOpenOTP) {
-      dialogRef.current?.showModal();
       const otpData = await registerOTP();
       if (otpData) {
-        setOtpUrl(otpData.data.otpauthURL);
+        setOtpUrl(otpData.data);
       }
       return;
     }

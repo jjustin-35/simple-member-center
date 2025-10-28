@@ -35,9 +35,9 @@ const VerifySuccess = () => {
   );
 };
 
-const VerifyForm = ({ onFinish }: { onFinish: () => void }) => {
+const VerifyForm = ({ onFinish, isInitialOTP }: { onFinish: () => void, isInitialOTP: boolean }) => {
   const [state, formAction, isPending] = useActionState(
-    verifyOTP,
+    (_: ApiState, formData: FormData) => verifyOTP(_, formData, isInitialOTP),
     initialState
   );
 
@@ -139,7 +139,7 @@ const OtpVerify = ({
 
   const content = (() => {
     if (!otpUrl || isVerifying) {
-      return <VerifyForm onFinish={handleFinish} />;
+      return <VerifyForm onFinish={handleFinish} isInitialOTP={!!otpUrl} />;
     }
 
     return (
@@ -178,11 +178,7 @@ const OtpVerify = ({
       </dialog>
     );
 
-  return (
-    <div className="flex items-center justify-center">
-      {content}
-    </div>
-  );
+  return <div className="flex items-center justify-center">{content}</div>;
 };
 
 export default OtpVerify;

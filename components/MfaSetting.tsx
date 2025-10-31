@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { clearOTP, registerOTP } from "@/actions/otp";
-import OtpVerify from "./OtpVerify";
+import OtpVerify from "./Otp";
 
 const OtpForm = ({ user }: { user: User }) => {
   const { is_otp_enabled } = user.user_metadata;

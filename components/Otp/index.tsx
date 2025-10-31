@@ -3,7 +3,9 @@
 import { useActionState, startTransition, useEffect, useState } from "react";
 import { ApiState } from "@/types/api";
 import { verifyOTP } from "@/actions/otp";
-import QRCode from "../QRCode";
+import OtpRegister from "./OtpRegister";
+import VerifySuccess from "./VerifySuccess";
+import Backup from "./Backup";
 
 const initialState: ApiState<{
   otp?: string;
@@ -13,35 +15,13 @@ const initialState: ApiState<{
   errors: {},
 };
 
-const VerifySuccess = () => {
-  return (
-    <div className="h-35 flex flex-col items-center justify-center">
-      <svg
-        className="w-10 h-10 text-green-500 mb-2"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-      <h3 className="text-xl text-gray-500 text-center">OTP 驗證成功 !</h3>
-    </div>
-  );
-};
-
 const VerifyForm = ({
   onFinish,
-  onResetOTP,
+  onVerifyBackupCode,
   isInitialOTP,
 }: {
   onFinish: () => void;
-  onResetOTP: () => void;
+  onVerifyBackupCode: () => void;
   isInitialOTP: boolean;
 }) => {
   const [state, formAction, isPending] = useActionState(
@@ -115,12 +95,12 @@ const VerifyForm = ({
         )}
       </button>
       <div className="mt-4 text-sm text-gray-500 text-center">
-        無法成功驗證，請
+        無法成功驗證?
         <a
           className="text-indigo-600 cursor-pointer underline"
-          onClick={onResetOTP}
+          onClick={onVerifyBackupCode}
         >
-          重置 OTP 設定
+          使用備份碼驗證
         </a>
       </div>
     </form>
@@ -133,7 +113,6 @@ const OtpVerify = ({
   otpSecret,
   onCancel,
   onFinish,
-  onResetOTP,
   isModal = true,
 }: {
   dialogRef?: React.RefObject<HTMLDialogElement>;
@@ -142,15 +121,14 @@ const OtpVerify = ({
   isModal?: boolean;
   onCancel?: () => void;
   onFinish?: () => void;
-  onResetOTP?: () => void;
 }) => {
   const [isVerifying, setIsVerifying] = useState(false);
-  const [isShowingSecret, setIsShowingSecret] = useState(false);
+  const [isVerifyingBackup, setIsVerifyingBackup] = useState(false);
 
   useEffect(() => {
     return () => {
       setIsVerifying(false);
-      setIsShowingSecret(false);
+      setIsVerifyingBackup(false);
     };
   }, []);
 
@@ -169,70 +147,31 @@ const OtpVerify = ({
     if (dialogRef) dialogRef.current?.close();
   };
 
-  const toggleShowSecret = () => {
-    setIsShowingSecret(!isShowingSecret);
-  };
-
-  const handleResetOTP = () => {
-    setIsShowingSecret(false);
-    if (onResetOTP) onResetOTP();
+  const handleVerifyBackupCode = () => {
+    setIsVerifyingBackup(true);
   };
 
   const content = (() => {
+    if (isVerifyingBackup) {
+      return <Backup onFinish={handleFinish} />;
+    }
+
     if (!otpUrl || isVerifying) {
       return (
         <VerifyForm
           onFinish={handleFinish}
-          onResetOTP={handleResetOTP}
+          onVerifyBackupCode={handleVerifyBackupCode}
           isInitialOTP={!!otpUrl}
         />
       );
     }
 
     return (
-      <div className="w-80 h-100 flex flex-col items-center justify-center">
-        <p className="text-sm text-gray-500 text-center">
-          請使用 Google Authenticator 掃描 QR Code 或<br />
-          手動輸入 OTP 密碼
-        </p>
-        {!isShowingSecret && (
-          <>
-            <QRCode data={otpUrl} />
-            <div className="mt-4 text-sm">
-              無法掃描 QR Code 嗎？
-              <br />
-              <a
-                className="text-indigo-600 cursor-pointer underline"
-                onClick={toggleShowSecret}
-              >
-                顯示設定金鑰
-              </a>
-            </div>
-          </>
-        )}
-        {isShowingSecret && otpSecret && (
-          <>
-            <div className="text-sm text-gray-500">
-              <p>OTP 密碼: {otpSecret}</p>
-            </div>
-            <div className="mt-4 text-sm">
-              <a
-                className="text-indigo-600 cursor-pointer underline"
-                onClick={toggleShowSecret}
-              >
-                顯示 QR Code
-              </a>
-            </div>
-          </>
-        )}
-
-        <button
-          className="mt-4 px-4 py-2 bg-indigo-600 text-sm text-white rounded-md"
-          onClick={handleNextStep}
-        >
-          下一步
-        </button>
-      </div>
+      <OtpRegister
+        otpUrl={otpUrl}
+        otpSecret={otpSecret}
+        onNextStep={handleNextStep}
+      />
     );
   })();
 

@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import OtpForm from "@/components/OtpSetting";
+import OtpForm from "@/components/Otp/OtpSetting";
 import SignoutButton from "@/components/SignoutButton";
 import paths from "@/constants/paths";
 

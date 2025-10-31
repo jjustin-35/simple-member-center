@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import OtpVerify from "@/components/OtpVerify";
+import OtpVerify from "@/components/Otp/OtpVerify";
 import paths from "@/constants/paths";
 import { createClient } from "@/utils/supabase/client";
 import { registerOTP } from "@/actions/otp";

@@ -3,7 +3,7 @@
 import { useActionState, startTransition, useEffect, useState } from "react";
 import { ApiState } from "@/types/api";
 import { verifyOTP } from "@/actions/otp";
-import QRCode from "./QRCode";
+import QRCode from "../QRCode";
 
 const initialState: ApiState<{
   otp?: string;
@@ -76,6 +76,7 @@ const VerifyForm = ({
         required
         autoComplete="one-time-code"
         inputMode="numeric"
+        maxLength={6}
         className="mt-1 appearance-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
       />
       {state.errors?.otp && (
@@ -241,10 +242,10 @@ const OtpVerify = ({
         ref={dialogRef}
         className="backdrop:bg-black backdrop:opacity-50 backdrop:backdrop-blur-sm fixed inset-0 m-auto max-w-md max-h-fit rounded-lg shadow-lg border-0 p-0 bg-transparent"
       >
-        <button onClick={handleCancel} className="absolute top-1 left-5">
-          x
-        </button>
         <div className="bg-white p-4 flex flex-col items-center justify-center rounded-lg">
+          <button onClick={handleCancel} className="text-2xl self-start">
+            x
+          </button>
           {content}
         </div>
       </dialog>

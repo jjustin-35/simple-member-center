@@ -17,11 +17,13 @@ export default async function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen py-6 bg-gray-50">
-      <div className="bg-gray-50 text-black text-2xl font-bold flex flex-col items-center justify-center">
-        <h1 className="text-4xl font-bold">Dashboard</h1>
-        <p className="text-2xl mb-4">welcome, {user?.email}</p>
-        <MfaSetting user={user} />
+    <div className="h-screen py-6 bg-gray-50">
+      <div className="h-full bg-gray-50 text-black text-2xl font-bold flex flex-col items-center justify-between">
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-4xl font-bold">Dashboard</h1>
+          <p className="text-2xl mb-4">welcome, {user?.email}</p>
+          <MfaSetting user={user} />
+        </div>
         <SignoutButton />
       </div>
     </div>

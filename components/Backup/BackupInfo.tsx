@@ -1,8 +1,8 @@
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect } from "react";
 import { generateBackupCode, saveBackupCode } from "@/actions/backup";
 
 const BackupInfo = ({ onFinish }: { onFinish: () => void }) => {
-  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [codes, setCodes] = useState<string[]>([]);
   const amount = 5;
 
@@ -18,9 +18,8 @@ const BackupInfo = ({ onFinish }: { onFinish: () => void }) => {
         console.error(result.message);
         return;
       }
-      startTransition(() => {
-        setCodes(codes);
-      });
+      setCodes(codes);
+      setIsLoading(false);
     })();
   }, []);
 
@@ -29,13 +28,40 @@ const BackupInfo = ({ onFinish }: { onFinish: () => void }) => {
     alert("複製成功");
   };
 
-  if (isPending)
+  if (isLoading)
     return (
       <div className="w-80 h-100 flex items-center justify-center">
-        Loading...
+        <svg
+          className="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-600"
+          xmlns="http://www.w3.org/2000/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+        載入中...
       </div>
     );
-  if (!codes.length) return null;
+  if (!codes.length)
+    return (
+      <div className="w-80 h-100 flex items-center justify-center">
+        <p className="text-sm text-gray-500 text-center">
+          載入備份碼失敗
+        </p>
+      </div>
+    );
   return (
     <div className="flex flex-col items-center justify-center p-4">
       <div className="flex justify-between items-center w-full mb-4">

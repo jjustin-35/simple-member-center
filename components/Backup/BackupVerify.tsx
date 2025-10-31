@@ -1,7 +1,7 @@
 import { useActionState, startTransition, useEffect } from "react";
 import { ApiState } from "@/types/api";
 import { verifyBackupCode } from "@/actions/backup";
-import VerifySuccess from "./VerifySuccess";
+import VerifySuccess from "../Otp/VerifySuccess";
 
 const initialState: ApiState<{
   code?: string;

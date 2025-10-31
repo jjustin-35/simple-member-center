@@ -4,7 +4,7 @@ import { useActionState, startTransition, useEffect, useState } from "react";
 import { ApiState } from "@/types/api";
 import { verifyOTP } from "@/actions/otp";
 import VerifySuccess from "./VerifySuccess";
-import BackupInfo from "./BackupInfo";
+import BackupInfo from "../Backup/BackupInfo";
 
 const initialState: ApiState<{
   otp?: string;

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import OtpRegister from "./OtpRegister";
 import VerifyForm from "./VerifyForm";
-import BackupVerify from "./BackupVerify";
+import BackupVerify from "../Backup/BackupVerify";
 
 const OtpVerify = ({
   dialogRef,

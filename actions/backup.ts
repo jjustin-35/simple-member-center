@@ -5,7 +5,7 @@ import { hash, compare } from "bcrypt";
 import { createClient } from "@/utils/supabase/server";
 import { ApiState } from "@/types/api";
 
-export const generateBackupCode = (numGroups = 5) => {
+export const generateBackupCode = async (numGroups = 5) => {
   const codes = Array(numGroups)
     .fill(null)
     .map(() => crypto.randomBytes(4).toString("hex"));

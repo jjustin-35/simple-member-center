@@ -3,13 +3,15 @@
 import { cookies } from "next/headers";
 import speakeasy from "speakeasy";
 import { createClient } from "@/utils/supabase/server";
-import { getRedisClient } from "@/utils/redis";
 import { ApiState } from "@/types/api";
 
 export const verifyOTP = async (
   _: ApiState,
   formData: FormData,
-  isInitialOTP: boolean
+  optData: {
+    isInitialOTP: boolean;
+    secret: string;
+  }
 ): Promise<ApiState> => {
   const token = formData.get("token") as string;
   const isTrustDevice = formData.get("isTrustDevice") as string;
@@ -33,17 +35,9 @@ export const verifyOTP = async (
     const supabase = await createClient();
     const { data } = await supabase.auth.getUser();
 
-    const userId = data?.user?.id;
-
-    if (isInitialOTP) {
-      const redisClient = await getRedisClient();
-      const secret = (await redisClient.get(
-        `temp_otp_secret:${userId}`
-      )) as string;
-      if (!secret) throw new Error("temp otp expired");
-
+    if (optData.isInitialOTP) {
       const isVerified = speakeasy.totp.verify({
-        secret,
+        secret: optData.secret,
         token,
         encoding: "base32",
       });
@@ -51,12 +45,11 @@ export const verifyOTP = async (
 
       const { error } = await supabase.auth.updateUser({
         data: {
-          otp_secret: secret,
+          otp_secret: optData.secret,
           is_otp_enabled: true,
         },
       });
       if (error) throw error;
-      await redisClient.del(`temp_otp_secret:${userId}`);
 
       return {
         success: true,
@@ -139,12 +132,6 @@ export const registerOTP = async () => {
         name: "OTP-Sample: " + user.email,
         issuer: "OTP-Sample",
       });
-    const expiresAt = 300;
-
-    const redisClient = await getRedisClient();
-    await redisClient.set(`temp_otp_secret:${user.id}`, tempSecret, {
-      EX: expiresAt,
-    });
 
     return {
       success: true,

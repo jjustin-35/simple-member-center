@@ -18,14 +18,17 @@ const VerifyForm = ({
   onFinish,
   onVerifyBackupCode,
   isInitialOTP,
+  tempOTPSecret,
 }: {
   onFinish: () => void;
   onVerifyBackupCode: () => void;
   isInitialOTP: boolean;
+  tempOTPSecret: string;
 }) => {
   const [isShowingBackupInfo, setIsShowingBackupInfo] = useState(false);
   const [state, formAction, isPending] = useActionState(
-    (_: ApiState, formData: FormData) => verifyOTP(_, formData, isInitialOTP),
+    (_: ApiState, formData: FormData) =>
+      verifyOTP(_, formData, { isInitialOTP, secret: tempOTPSecret }),
     initialState
   );
 

@@ -62,6 +62,7 @@ const OtpVerify = ({
           onFinish={handleFinish}
           onVerifyBackupCode={handleVerifyBackupCode}
           isInitialOTP={!!otpUrl}
+          tempOTPSecret={otpSecret || ""}
         />
       );
     }

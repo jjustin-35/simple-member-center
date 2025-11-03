@@ -1,5 +1,6 @@
 "use client";
 
+import { cookies } from "next/headers";
 import { useActionState, startTransition, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,12 +21,16 @@ export default function LoginForm() {
   );
   const router = useRouter();
   useEffect(() => {
-    if (!state.success) return;
-    if (state.data?.user_metadata.is_otp_enabled) {
-      router.push(paths.otp);
-    } else {
-      router.push(paths.dashboard);
-    }
+    (async () => {
+      if (!state.success) return;
+      const cookieStore = await cookies();
+      const isTrustedDevice = cookieStore.get("is_trusted_device")?.value;
+      if (state.data?.user_metadata.is_otp_enabled && !isTrustedDevice) {
+        router.push(paths.otp);
+      } else {
+        router.push(paths.dashboard);
+      }
+    })();
   }, [state.success, state.data]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {

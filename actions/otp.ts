@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import speakeasy from "speakeasy";
 import { createClient } from "@/utils/supabase/server";
 import { getRedisClient } from "@/utils/redis";
@@ -11,6 +12,8 @@ export const verifyOTP = async (
   isInitialOTP: boolean
 ): Promise<ApiState> => {
   const token = formData.get("token") as string;
+  const isTrustDevice = formData.get("isTrustDevice") as string;
+
   if (!token) {
     return {
       success: false,
@@ -71,6 +74,17 @@ export const verifyOTP = async (
       encoding: "base32",
     });
     if (!isVerified) throw new Error("invalid otp");
+
+    const cookieStore = await cookies();
+    if (isTrustDevice === "true") {
+      cookieStore.set("is_trusted_device", "true", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+      });
+    } else {
+      cookieStore.delete("is_trusted_device");
+    }
 
     return {
       success: true,

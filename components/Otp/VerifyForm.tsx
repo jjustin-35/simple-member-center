@@ -72,6 +72,15 @@ const VerifyForm = ({
       {state.errors?.otp && (
         <p className="mt-1 text-sm text-red-600 w-full">{state.errors?.otp}</p>
       )}
+      <input
+        type="checkbox"
+        name="isTrustDevice"
+        id="isTrustDevice"
+        value="true"
+      />
+      <label htmlFor="isTrustDevice">
+        信任此裝置，下次登入時不需要驗證 OTP
+      </label>
       <button
         type="submit"
         className="mt-4 px-4 py-2 bg-indigo-600 text-sm text-white rounded-md"

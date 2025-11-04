@@ -57,9 +57,7 @@ const BackupInfo = ({ onFinish }: { onFinish: () => void }) => {
   if (!codes.length)
     return (
       <div className="w-80 h-100 flex items-center justify-center">
-        <p className="text-sm text-gray-500 text-center">
-          載入備份碼失敗
-        </p>
+        <p className="text-sm text-gray-500 text-center">載入備份碼失敗</p>
       </div>
     );
   return (

@@ -34,6 +34,13 @@ export const saveBackupCode = async (codes: string[]) => {
   }
 };
 
+export const getBackupCodes = async () => {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) throw new Error("no user");
+  return data.user.user_metadata.backup_codes as string[];
+};
+
 export const verifyBackupCode = async (
   _: ApiState<{ code?: string }>,
   formData: FormData

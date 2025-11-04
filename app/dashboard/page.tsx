@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import MfaSetting from "@/components/MfaSetting";
 import SignoutButton from "@/components/SignoutButton";
 import paths from "@/constants/paths";
+import BackupSetting from "@/components/Backup/BackupSetting";
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -23,6 +24,7 @@ export default async function Dashboard() {
           <h1 className="text-4xl font-bold">Dashboard</h1>
           <p className="text-2xl mb-4">welcome, {user?.email}</p>
           <MfaSetting user={user} />
+          <BackupSetting user={user} />
         </div>
         <SignoutButton />
       </div>

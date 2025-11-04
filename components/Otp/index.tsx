@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import OtpRegister from "./OtpRegister";
 import VerifyForm from "./VerifyForm";
 import BackupVerify from "../Backup/BackupVerify";
+import ModalWrapper from "../ModalWrapper";
 
 const OtpVerify = ({
   dialogRef,
@@ -78,17 +79,9 @@ const OtpVerify = ({
 
   if (isModal)
     return (
-      <dialog
-        ref={dialogRef}
-        className="backdrop:bg-black backdrop:opacity-50 backdrop:backdrop-blur-sm fixed inset-0 m-auto max-w-md max-h-fit rounded-lg shadow-lg border-0 p-0 bg-transparent"
-      >
-        <div className="bg-white p-4 flex flex-col items-center justify-center rounded-lg">
-          <button onClick={handleCancel} className="text-2xl self-start">
-            x
-          </button>
-          {content}
-        </div>
-      </dialog>
+      <ModalWrapper dialogRef={dialogRef} onClose={handleCancel}>
+        {content}
+      </ModalWrapper>
     );
 
   return <div className="flex items-center justify-center">{content}</div>;

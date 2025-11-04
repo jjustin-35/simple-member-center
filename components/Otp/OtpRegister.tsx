@@ -42,7 +42,10 @@ const OtpRegister = ({
       {isShowingSecret && otpSecret && (
         <>
           <div className="text-sm text-gray-500">
-            <p>OTP 密碼: {otpSecret}</p>
+            <p>
+              OTP 密碼: <br />
+              <span className="text-indigo-600 break-all">{otpSecret}</span>
+            </p>
           </div>
           <div className="mt-4 text-sm">
             <a

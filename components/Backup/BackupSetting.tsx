@@ -16,6 +16,7 @@ const BackupSetting = ({ user }: { user: User }) => {
   };
 
   const handleFinish = () => {
+    setIsRegenerating(false);
     dialogRef.current?.close();
   };
 

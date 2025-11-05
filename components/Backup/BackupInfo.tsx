@@ -21,6 +21,11 @@ const BackupInfo = ({ onFinish }: { onFinish: () => void }) => {
       setCodes(codes);
       setIsLoading(false);
     })();
+
+    return () => {
+      setIsLoading(true);
+      setCodes([]);
+    };
   }, []);
 
   const onCopyAll = () => {
@@ -62,7 +67,7 @@ const BackupInfo = ({ onFinish }: { onFinish: () => void }) => {
     );
   return (
     <div className="flex flex-col items-center justify-center p-4">
-      <div className="flex justify-between items-center w-full mb-4">
+      <div className="flex justify-between items-center gap-2 w-full mb-4">
         <p className="text-sm text-gray-500 text-center">
           請將以下備份碼保存到安全的地方
         </p>

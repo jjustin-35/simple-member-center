@@ -103,6 +103,7 @@ export const clearOTP = async (): Promise<ApiState> => {
       data: {
         is_otp_enabled: false,
         otp_secret: null,
+        backup_codes: [],
       },
     });
     if (error) throw error;

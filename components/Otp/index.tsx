@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import OtpRegister from "./OtpRegister";
 import VerifyForm from "./VerifyForm";
 import BackupVerify from "../Backup/BackupVerify";
@@ -24,10 +24,6 @@ const OtpVerify = ({
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerifyingBackup, setIsVerifyingBackup] = useState(false);
 
-  useEffect(() => {
-    return () => reset();
-  }, []);
-
   const reset = () => {
     setIsVerifying(false);
     setIsVerifyingBackup(false);
@@ -45,6 +41,7 @@ const OtpVerify = ({
 
   const handleFinish = () => {
     if (onFinish) onFinish();
+    reset();
     if (dialogRef) dialogRef.current?.close();
   };
 

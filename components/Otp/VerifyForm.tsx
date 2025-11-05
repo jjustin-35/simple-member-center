@@ -60,7 +60,7 @@ const VerifyForm = ({
   return (
     <form
       onSubmit={onSubmit}
-      className="h-40 flex flex-col items-center justify-end"
+      className="h-40 flex flex-col items-center justify-center"
     >
       <input
         type="text"
@@ -75,18 +75,20 @@ const VerifyForm = ({
       {state.errors?.otp && (
         <p className="mt-1 text-sm text-red-600 w-full">{state.errors?.otp}</p>
       )}
-      <div className="flex items-center gap-2 mt-4">
-        <input
-          type="checkbox"
-          name="isTrustDevice"
-          id="isTrustDevice"
-          value="true"
-          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-        />
-        <label htmlFor="isTrustDevice" className="text-sm text-gray-500">
-          信任此裝置，下次登入時不需要驗證 OTP
-        </label>
-      </div>
+      {!isInitialOTP && (
+        <div className="flex items-center gap-2 mt-4">
+          <input
+            type="checkbox"
+            name="isTrustDevice"
+            id="isTrustDevice"
+            value="true"
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+          />
+          <label htmlFor="isTrustDevice" className="text-sm text-gray-500">
+            信任此裝置，下次登入時不需要驗證 OTP
+          </label>
+        </div>
+      )}
       <button
         type="submit"
         className="mt-4 px-4 py-2 bg-indigo-600 text-sm text-white rounded-md"

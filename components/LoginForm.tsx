@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginAction, LoginFormState } from "@/actions/login";
 import paths from "@/constants/paths";
+import { microsoftLogin } from "@/lib/socialLogin/microsoft";
 
 const initialState: LoginFormState = {
   success: false,
@@ -175,6 +176,22 @@ export default function LoginForm({
               {state.message}
             </div>
           )}
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              使用其他登入方式
+            </p>
+          </div>
+
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={microsoftLogin}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              使用 Microsoft 登入
+            </button>
+          </div>  
 
           <div className="text-center">
             <p className="text-sm text-gray-600">

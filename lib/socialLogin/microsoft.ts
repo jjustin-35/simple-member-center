@@ -32,6 +32,9 @@ export const microsoftLogin = async () => {
     });
     const { accessToken, idToken } = result;
 
+    console.log("accessToken", accessToken);
+    console.log("idToken", idToken);
+
     if (!accessToken || !idToken) {
       throw new Error("no access token or id token");
     }
